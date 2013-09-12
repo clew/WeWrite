@@ -2,7 +2,8 @@
       			  xmlns:tools="http://schemas.android.com/tools"    
     			android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:orientation = "vertical">
+                android:orientation = "vertical"
+                android:background="@drawable/back3">
     
      <View
             	android:layout_width="match_parent"
@@ -10,25 +11,30 @@
             	android:background="#ffaa66cc"></View>
 
 
-<RelativeLayout 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<!--  <RelativeLayout 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     tools:context=".MainActivity"
-    android:background = "@drawable/back"
+    android:background = "@drawable/back2"
      >
    
 
-    <Button
+    <ImageButton
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="Open Write"
-        android:fontFamily="sans-serif-light" 
-       	style="@style/Buttonpurp"
+        android:src = "@drawable/logo"
+       	style="@style/ImageButtonpurp"
         />
 
    
-</RelativeLayout>
+</RelativeLayout>-->
+
+<ListView
+    android:id="@android:id/list"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	android:listSelector="@drawable/custom" />
 </LinearLayout>

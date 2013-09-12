@@ -1,34 +1,77 @@
 package com.example.test;
 
-import android.app.Activity;
+import java.util.ArrayList;
+
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity  {
 
+  static final String[] MOBILE_OS = 
+      new String[] { "First Option", "Second", "abcdefghijklmnopqrstuvwxyz", "Just another test"};
+  
+  ArrayList<String> writes = new ArrayList<String>();
+  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        
-        Button start = (Button) findViewById(R.id.button1);
+            
+        setContentView(R.layout.activity_main);        
+        /*ImageButton start = (ImageButton) findViewById(R.id.button1);
         
         start.setOnClickListener(new OnClickListener() {
 			 
-			@Override
-			public void onClick(View arg0) {
+			  @Override
+			  public void onClick(View arg0) {
 				
 				Intent i = new Intent(getBaseContext(), wewrite.class);                      
 				startActivity(i);
-			}
+			  }
  
-		});
+		   });*/
+            
+        writes.add("First Option");
+        writes.add("Second");
+        writes.add("abcdefghijklmnopqrstuvwxyz");
+        writes.add("Just another test");
         
+        setListAdapter(new listadapter(this, writes));
         
+        this.getListView().setLongClickable(true);
+        this.getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                int arg2, long arg3)
+            {
+              writes.remove(arg2);
+              setListAdapter(new listadapter(MainActivity.this, writes));
+
+              return true;
+            }
+         });
+       
+    }
+    
+    
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+   
+      //get selected items
+      String selectedValue = (String) getListAdapter().getItem(position);
+      Intent i = new Intent(getBaseContext(), wewrite.class);
+      i.putExtra("str", selectedValue);
+      i.putExtra("loc", position);
+      startActivityForResult(i,1);
+   
     }
 
     @Override
@@ -37,5 +80,42 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
+    
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.add:
+                Intent i = new Intent(getBaseContext(), wewrite.class); 
+                i.putExtra("str", "");
+                i.putExtra("loc", writes.size()-1);
+                startActivityForResult(i,2);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        Bundle extras = intent.getExtras();
+    
+        switch(requestCode) {
+            case 1:
+                writes.set(extras.getInt("loc"), extras.getString("str"));
+                setListAdapter(new listadapter(this, writes));
+                
+                break;
+            case 2:
+                writes.add(extras.getString("str"));
+                setListAdapter(new listadapter(this, writes));
+              break;
+              
+        
+        }
+    }
+    
     
 }

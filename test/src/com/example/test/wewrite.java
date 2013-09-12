@@ -3,8 +3,8 @@ package com.example.test;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -18,8 +18,7 @@ public class wewrite extends Activity {
 	
 		ArrayList<String> undolist = new ArrayList<String>();
 		ArrayList<String> redolist = new ArrayList<String>();
-		
-		
+				
 		EditText txt;
 		
 		Button undobutton;
@@ -27,6 +26,8 @@ public class wewrite extends Activity {
 		
 		String temp;
 		String temp2;
+		
+		int location;
 				
 		boolean no;
 	
@@ -35,14 +36,19 @@ public class wewrite extends Activity {
 	        super.onCreate(savedInstanceState);
 	        setContentView(R.layout.text);
 	        
-	        //getActionBar().setDisplayHomeAsUpEnabled(true);
+	        getActionBar().setDisplayHomeAsUpEnabled(true);
 	        
 	        txt  = (EditText) findViewById(R.id.editText1);
 	        undobutton = (Button) findViewById(R.id.undo);
 	        redobutton = (Button) findViewById(R.id.redo);
 	        
-	        temp = new String("");
-	        	        
+	        Bundle extras = getIntent().getExtras();
+	        temp = extras.getString("str");
+	        location = extras.getInt("loc");
+	        
+	        txt.setText(temp);
+	        txt.setSelection(txt.getText().length());
+	        	        	        
 	        no = true;
 	        	   
 	        txt.addTextChangedListener(new TextWatcher() {
@@ -147,5 +153,14 @@ public class wewrite extends Activity {
 	 		onBackPressed();
 	 	    return true;
 	     }
-
+	 	 
+	 	@Override
+	 	public void onBackPressed() {
+	 	  Intent returnIntent = new Intent();
+	 	  returnIntent.putExtra("str", txt.getText().toString());
+	 	  returnIntent.putExtra("loc", location);
+	 	  setResult(RESULT_OK,returnIntent);     
+	 	  finish();
+	 	}
+	 	 
 }
