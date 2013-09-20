@@ -1,0 +1,6 @@
+message MyTextChange {
+  required string newText = 1;
+  required int32 start = 2;
+  required int32 replacedTextLength = 3;
+  required int32 newTextLength = 4;
+}

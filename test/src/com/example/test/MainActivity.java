@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,47 +17,31 @@ public class MainActivity extends ListActivity  {
 
   static final String[] MOBILE_OS = 
       new String[] { "First Option", "Second", "abcdefghijklmnopqrstuvwxyz", "Just another test"};
+
+private static final String TAG = "MainActivity";
   
-  ArrayList<String> writes = new ArrayList<String>();
+	ArrayList<String> writes = new ArrayList<String>();
   
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
             
-        setContentView(R.layout.activity_main);        
-        /*ImageButton start = (ImageButton) findViewById(R.id.button1);
-        
-        start.setOnClickListener(new OnClickListener() {
-			 
-			  @Override
-			  public void onClick(View arg0) {
-				
-				Intent i = new Intent(getBaseContext(), wewrite.class);                      
-				startActivity(i);
-			  }
- 
-		   });*/
-            
-        writes.add("First Option");
-        writes.add("Second");
-        writes.add("abcdefghijklmnopqrstuvwxyz");
-        writes.add("Just another test");
-        
+        setContentView(R.layout.activity_main);                    
         setListAdapter(new listadapter(this, writes));
         
         this.getListView().setLongClickable(true);
-        this.getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
-
-            @Override
+        this.getListView().setOnItemLongClickListener(new OnItemLongClickListener() 
+        {
+        	@Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                 int arg2, long arg3)
             {
-              writes.remove(arg2);
-              setListAdapter(new listadapter(MainActivity.this, writes));
-
-              return true;
+        		writes.remove(arg2);
+        		setListAdapter(new listadapter(MainActivity.this, writes));
+        		return true;
             }
-         });
+        });
        
     }
     
@@ -70,6 +55,7 @@ public class MainActivity extends ListActivity  {
       Intent i = new Intent(getBaseContext(), wewrite.class);
       i.putExtra("str", selectedValue);
       i.putExtra("loc", position);
+      i.putExtra("mode", "rejoin");
       startActivityForResult(i,1);
    
     }
@@ -85,13 +71,19 @@ public class MainActivity extends ListActivity  {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
+        Intent i = new Intent(getBaseContext(), wewrite.class); 
+        i.putExtra("str", "");
+        i.putExtra("loc", writes.size()-1);
+        
         switch (item.getItemId()) {
             case R.id.add:
-                Intent i = new Intent(getBaseContext(), wewrite.class); 
-                i.putExtra("str", "");
-                i.putExtra("loc", writes.size()-1);
+                i.putExtra("mode", "create");
                 startActivityForResult(i,2);
                 return true;
+            case R.id.join_session:
+            	i.putExtra("mode", "join");
+            	startActivityForResult(i,3);
+            	return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

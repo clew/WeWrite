@@ -1,0 +1,4 @@
+message BaseFile {
+  required string startText = 1;
+  required int32 length = 2;
+}
