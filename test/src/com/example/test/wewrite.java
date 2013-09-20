@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.example.test.TextChange.MyTextChange;
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -23,9 +20,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.test.TextChange.MyTextChange;
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import edu.umich.imlc.collabrify.client.CollabrifyAdapter;
 import edu.umich.imlc.collabrify.client.CollabrifyClient;
 import edu.umich.imlc.collabrify.client.CollabrifyListener;
+import edu.umich.imlc.collabrify.client.CollabrifyParticipant;
 import edu.umich.imlc.collabrify.client.CollabrifySession;
 import edu.umich.imlc.collabrify.client.exceptions.CollabrifyException;
 
@@ -183,13 +185,25 @@ public class wewrite extends Activity
 		/* Collabrify Setup */
 	    collabrifyListener = new CollabrifyAdapter()
 	    {
-	
+	    	
 	    	@Override
 	    	public void onDisconnect()
 	    	{
 	    	  Log.i(TAG, "disconnected from " + sessionName + " with " + userName);
 	    	}
-
+	    	
+	    	@Override
+	    	public void onParticipantLeft(CollabrifyParticipant p)
+	    	{
+	    		Log.v(TAG, "Participant Left " + p.toString());
+	    	}
+	    	
+	    	@Override
+	    	public void onParticipantJoined(CollabrifyParticipant p) 
+	    	{
+	    		Log.v(TAG, "Participant Joined " + p.toString());
+	    	}
+	    	
 	    	@Override
 	    	public void onReceiveEvent(final long orderId, int subId,
 	    	  String eventType, final byte[] data)
@@ -221,6 +235,26 @@ public class wewrite extends Activity
 				sessionId = id;
 			}
 
+			@Override
+			public void onSessionJoined(long maxOrderId, long baseFileSize)
+			{
+				//May Redo this to use google protocol buffer!
+				Log.i(TAG, "Session Joined");
+				if( baseFileSize > 0 )
+				{
+					  //initialize buffer to receive base file
+					  baseFileReceiveBuffer = new ByteArrayOutputStream((int) baseFileSize);
+				}
+		
+			}
+			
+			@Override
+			public void onSessionEnd(long id)
+			{
+				//filler
+				Log.i(TAG, sessionName + ", " + sessionId + " has ended");				
+			}
+			
 			@Override
 			public void onError(CollabrifyException e)
 			{
@@ -254,6 +288,7 @@ public class wewrite extends Activity
 							sessionId = sessionList.get(which).id();
 							sessionName = sessionList.get(which).name();
 							myClient.joinSession(sessionId, null);
+							txt.setText(baseFileReceiveBuffer.toString());
 						}
 						catch( CollabrifyException e )
 						{
@@ -353,7 +388,8 @@ public class wewrite extends Activity
 			{
 				/* Create a Session */
 				sessionName = "lewc_vakayash_" + rand.nextInt(Integer.MAX_VALUE);
-				baseFileBuffer = new ByteArrayInputStream(sessionName.getBytes());
+				baseFileBuffer = new ByteArrayInputStream(txt.toString().getBytes());
+				
 				myClient.createSessionWithBase(sessionName, tags, null, 0);
 				Log.i(TAG, "Session name is " + sessionName);
 			
@@ -361,7 +397,7 @@ public class wewrite extends Activity
 			else if (mode.equals("join"))
 			{
 				myClient.requestSessionList(tags);
-				Log.v(TAG, "Oncreate Join MER MER MER");
+				Log.v(TAG, "Joined Session: " + sessionName + " under " + userName);
 			}
 			else if (mode.equals("rejoin"))
 			{
