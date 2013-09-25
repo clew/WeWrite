@@ -221,7 +221,7 @@ public class wewrite extends Activity
 		    			final int replacedTextLength = packet.getReplacedTextLength();
 		    			final int newTextLength = packet.getNewTextLength();
 		    			location += newTextLength;
-		    			
+		    			no = false;
 		    	        runOnUiThread(new Runnable()
 		    	        {
 
@@ -233,6 +233,7 @@ public class wewrite extends Activity
 		    	          }
 		    	        });		    			
 		    				
+		    	        no = true;
 		    		} catch(InvalidProtocolBufferException e) {
 		    			Log.e(TAG, "error receiving data");
 		    		}
