@@ -210,18 +210,29 @@ public class wewrite extends Activity
 	    	{
 	    		Log.i(TAG, "orderID: " + orderId + " regID: " + subId + " " + eventType);
 	    		if (myRegIDs.contains(subId)){
-	    			myRegIDs.remove(subId);
+	    			Integer i = subId;
+	    			myRegIDs.remove(i);
 	    		} 
 	    		else {
 		    		try {
 		    			MyTextChange packet = MyTextChange.parseFrom(data);
-		    			String newText = packet.getNewText();
-		    			int start = packet.getStart();
-		    			int replacedTextLength = packet.getReplacedTextLength();
-		    			int newTextLength = packet.getNewTextLength();
-		    			txt.getText().replace(start, replacedTextLength, newText);
+		    			final String newText = packet.getNewText();
+		    			final int start = packet.getStart();
+		    			final int replacedTextLength = packet.getReplacedTextLength();
+		    			final int newTextLength = packet.getNewTextLength();
 		    			location += newTextLength;
 		    			
+		    	        runOnUiThread(new Runnable()
+		    	        {
+
+		    	          @Override
+		    	          public void run()
+		    	          {
+
+				    			txt.getText().replace(start, replacedTextLength, newText);    	        	  
+		    	          }
+		    	        });		    			
+		    				
 		    		} catch(InvalidProtocolBufferException e) {
 		    			Log.e(TAG, "error receiving data");
 		    		}
@@ -288,7 +299,8 @@ public class wewrite extends Activity
 							sessionId = sessionList.get(which).id();
 							sessionName = sessionList.get(which).name();
 							myClient.joinSession(sessionId, null);
-							txt.setText(baseFileReceiveBuffer.toString());
+					
+							//txt.setText(baseFileReceiveBuffer.toString());
 						}
 						catch( CollabrifyException e )
 						{
@@ -440,6 +452,7 @@ public class wewrite extends Activity
 		String title_str = "Session: " + sessionName + "\nUser Display Name: " + userName;
 		returnIntent.putExtra("str", title_str);
 		returnIntent.putExtra("loc", location);
+		
 		setResult(RESULT_OK, returnIntent);
 		finish();
 	}

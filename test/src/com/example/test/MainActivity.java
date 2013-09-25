@@ -107,7 +107,5 @@ private static final String TAG = "MainActivity";
               
         
         }
-    }
-    
-    
+    } 
 }
