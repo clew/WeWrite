@@ -1,6 +1,7 @@
 package com.example.test;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -15,7 +16,9 @@ import android.widget.ListView;
 
 public class MainActivity extends ListActivity  {
 
-  static final String[] MOBILE_OS = 
+private String userName;	
+	
+static final String[] MOBILE_OS = 
       new String[] { "First Option", "Second", "abcdefghijklmnopqrstuvwxyz", "Just another test"};
 
 private static final String TAG = "MainActivity";
@@ -30,6 +33,8 @@ private static final String TAG = "MainActivity";
         setContentView(R.layout.activity_main);                    
         setListAdapter(new listadapter(this, writes));
         
+        Random rand = new Random();
+        userName = "lewc" + rand.nextInt(Integer.MAX_VALUE);
         this.getListView().setLongClickable(true);
         this.getListView().setOnItemLongClickListener(new OnItemLongClickListener() 
         {
@@ -56,6 +61,7 @@ private static final String TAG = "MainActivity";
       i.putExtra("str", selectedValue);
       i.putExtra("loc", position);
       i.putExtra("mode", "rejoin");
+      i.putExtra("userName", userName);
       startActivityForResult(i,1);
    
     }
@@ -74,6 +80,7 @@ private static final String TAG = "MainActivity";
         Intent i = new Intent(getBaseContext(), wewrite.class); 
         i.putExtra("str", "");
         i.putExtra("loc", writes.size()-1);
+        i.putExtra("userName", userName);
         
         switch (item.getItemId()) {
             case R.id.add:

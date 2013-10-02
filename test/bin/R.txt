@@ -84,12 +84,14 @@ int id none 0x7f050000
 int id normal 0x7f050001
 int id redo 0x7f050009
 int id satellite 0x7f050002
+int id session_name 0x7f05000e
 int id terrain 0x7f050003
 int id undo 0x7f050008
 int layout activity_main 0x7f030000
 int layout listelement 0x7f030001
 int layout text 0x7f030002
 int menu activity_main 0x7f080000
+int menu wewrite_actionbar 0x7f080001
 int string app_name 0x7f060015
 int string auth_client_needs_enabling_title 0x7f060010
 int string auth_client_needs_installation_title 0x7f060011

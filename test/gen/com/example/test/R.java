@@ -207,6 +207,7 @@ containing a value of this type.
         public static final int normal=0x7f050001;
         public static final int redo=0x7f050009;
         public static final int satellite=0x7f050002;
+        public static final int session_name=0x7f05000e;
         public static final int terrain=0x7f050003;
         public static final int undo=0x7f050008;
     }
@@ -217,6 +218,7 @@ containing a value of this type.
     }
     public static final class menu {
         public static final int activity_main=0x7f080000;
+        public static final int wewrite_actionbar=0x7f080001;
     }
     public static final class string {
         public static final int app_name=0x7f060015;

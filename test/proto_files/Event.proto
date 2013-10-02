@@ -1,0 +1,15 @@
+message WeWriteEvent {
+
+	enum EventType {
+		MOVECURSOR = 0;
+		CHANGETEXT = 1;
+	}
+
+	required EventType type = 1;
+	optional string newText  = 2;
+	optional int32 textStart = 3;
+	optional int32 replacedTextLength = 4;
+
+	optional int32 cursorStart = 5;
+	optional int64 participantID = 6;
+}
