@@ -175,13 +175,13 @@ public class wewrite extends Activity
 				undolist.remove(undolist.size()-1);
 				
 				
-				String redo_text = current_state.substring(event.start, event.replacedTextLength);
+				String redo_text = current_state.substring(event.start, event.start+ event.replacedTextLength);
 				MyEvent redo_event = new MyEvent(1,redo_text, event.start, event.text.length());
 				redolist.add(redo_event);
 				
 				is_undo_change = true;
 				//Apply Event;
-				do_undo_redo_event(redo_event);
+				do_undo_redo_event(event);
 				//APPLY EVENT!!!
 				
 				current_state = txt.getText().toString();
@@ -206,13 +206,13 @@ public class wewrite extends Activity
 				redolist.remove(redolist.size()-1);
 				
 				
-				String undo_text = current_state.substring(event.start, event.replacedTextLength);
+				String undo_text = current_state.substring(event.start, event.start + event.replacedTextLength);
 				MyEvent undo_event = new MyEvent(1,undo_text, event.start, event.text.length());
 				undolist.add(undo_event);
 				
 				is_undo_change = true;
 				//Apply Event;
-				do_undo_redo_event(undo_event);
+				do_undo_redo_event(event);
 				//APPLY EVENT!!!
 				
 				current_state = txt.getText().toString();
