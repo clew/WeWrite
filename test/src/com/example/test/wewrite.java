@@ -219,7 +219,7 @@ public class wewrite extends Activity
 				
 				is_undo_change = false;
 				
-									
+				undobutton.setEnabled(true);
 				if(redolist.size() == 0)
 				{
 					redobutton.setEnabled(false);
@@ -228,8 +228,8 @@ public class wewrite extends Activity
 		});
 
 		/* Collabrify Setup */
-		tags.add("viva");
-		tags.add("vida");
+		tags.add("reddit");
+		tags.add("hji");
 		
 		CollabrifyListener collabrifyListener = new wewriteCollabrifyAdapter(this);
 		try
