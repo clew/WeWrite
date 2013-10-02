@@ -59,8 +59,8 @@ public class wewrite extends Activity
 	public ArrayList<participant> participantList = new ArrayList<participant>();
 	
 	/* WeWrite Variables */
-	private ArrayList<String> undolist = new ArrayList<String>();
-	private ArrayList<String> redolist = new ArrayList<String>();
+	private ArrayList<MyEvent> undolist = new ArrayList<MyEvent>();
+	private ArrayList<MyEvent> redolist = new ArrayList<MyEvent>();
 
 	EditTextSelectionWatch txt;
 	int location;
@@ -77,7 +77,6 @@ public class wewrite extends Activity
 
 
 	ArrayList<String> tags = new ArrayList<String>();
-	ArrayList<Integer> myRegIDs = new ArrayList<Integer>();
 	long sessionId;
 	String sessionName;
 	String userName;
@@ -94,13 +93,14 @@ public class wewrite extends Activity
 	String last_correct_state = "";
 	Menu menu;
 	boolean in_reapply = false;
+	String current_state = "";
+	boolean is_undo_change = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstance)
 	{
 		super.onCreate(savedInstance);
 		setContentView(R.layout.text);
-		
 		
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,28 +124,22 @@ public class wewrite extends Activity
 			@Override
 			public void afterTextChanged(Editable s) {
 				isTextChange = false;
-				if(no)
-				{
-					
-					if(temp.equals(txt.getText().toString())){}
-					
-					else
-					{
-						undolist.add(temp);
-					
-						temp = new String(txt.getText().toString());					
-						redolist.clear();
-																	
-						undobutton.setEnabled(true);
-						redobutton.setEnabled(false);
-					}
-				}
 			}
 
 			@Override
-			public void beforeTextChanged(CharSequence arg0, int arg1,
-					int arg2, int arg3) {
+			public void beforeTextChanged(CharSequence s, int start,
+					int count, int after) {
+				
 				isTextChange = true;
+				if (!is_undo_change){
+					current_state = txt.getText().toString();
+					String tmp_string = s.toString().substring(start, start+count);
+					MyEvent undo_event = new MyEvent(1, tmp_string, start, after);
+					undolist.add(undo_event);
+					redolist.clear();
+					undobutton.setEnabled(true);
+					redobutton.setEnabled(false);
+				}
 			}
 
 			@Override
@@ -161,10 +155,8 @@ public class wewrite extends Activity
 						.build();
 					
 					try {
-						int regID = myClient.broadcast(packet.toByteArray(), "myTextChange");
+						myClient.broadcast(packet.toByteArray(), "myTextChange");
 						unconfirmed_event = true;
-		    			myRegIDs.add(regID);
-						Log.i(TAG, "from onBroadcast regID: " + regID);
 					}
 					catch (CollabrifyException e) {
 						Log.e(TAG, "Error Broadcasting Message");
@@ -179,16 +171,22 @@ public class wewrite extends Activity
 			@Override
 			public void onClick(View arg0) 
 			{	
-				String temp2 = new String(undolist.get(undolist.size()-1));
-			
-				undolist.remove(undolist.size()-1);							
-				redolist.add(temp);
+				MyEvent event = undolist.get(undolist.size()-1);
+				undolist.remove(undolist.size()-1);
 				
-				no = false;					
+				
+				String redo_text = current_state.substring(event.start, event.replacedTextLength);
+				MyEvent redo_event = new MyEvent(1,redo_text, event.start, event.text.length());
+				redolist.add(redo_event);
+				
+				is_undo_change = true;
+				//Apply Event;
 				txt.setText(temp2);
-				temp = temp2;
-				txt.setSelection(txt.getText().length());
-				no = true;
+				//APPLY EVENT!!!
+				
+				current_state = txt.getText().toString();
+				txt.setSelection(redo_event.start + redo_event.text.length());
+				is_undo_change = false;
 				
 				redobutton.setEnabled(true);
 									
@@ -202,27 +200,32 @@ public class wewrite extends Activity
 		redobutton.setOnClickListener(new OnClickListener() 
 		{ 
 			@Override
-			public void onClick(View arg0) {
+			public void onClick(View view)
+			{
+				MyEvent event = redolist.get(redolist.size()-1);
+				redolist.remove(redolist.size()-1);
 				
-				String temp2 = new String(redolist.get(redolist.size()-1));
-			
-				redolist.remove(redolist.size()-1);		
-				undolist.add(temp);
 				
-				no = false;
-				txt.setText(temp2);		
-				temp = temp2;
-				txt.setSelection(txt.getText().length());
-				no = true;
+				String undo_text = current_state.substring(event.start, event.replacedTextLength);
+				MyEvent undo_event = new MyEvent(1,undo_text, event.start, event.text.length());
+				undolist.add(undo_event);
+				
+				is_undo_change = true;
+				//Apply Event;
+				txt.setText(temp2);
+				//APPLY EVENT!!!
+				
+				current_state = txt.getText().toString();
+				txt.setSelection(undo_event.start + undo_event.text.length());
+				is_undo_change = false;
 				
 				undobutton.setEnabled(true);
-				
-				txt.setSelection(txt.getText().length());
-				
-				if(redolist.size() == 0){
+									
+				if(redolist.size() == 0)
+				{
 					redobutton.setEnabled(false);
-				}		
-			}
+				}
+			}			
 		});
 
 		/* Collabrify Setup */
@@ -300,7 +303,11 @@ public class wewrite extends Activity
 		super.onStop();
 		try
 		{
-			myClient.leaveSession(true);
+			if (myClient.currentSessionOwner().getId() == userID) {
+				myClient.leaveSession(true);				
+			} else {
+				myClient.leaveSession(false);
+			}
 		} 
 		catch (CollabrifyException e) 
 		{

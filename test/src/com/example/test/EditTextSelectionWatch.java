@@ -57,8 +57,7 @@ public final class EditTextSelectionWatch extends EditText
 			try 
 			{
 				Log.i(wewrite.TAG, "CURSOR CHANGE HOOLIGANS!");
-				int regID = w.myClient.broadcast(packet.toByteArray(), "MoveCursor");
-    			w.myRegIDs.add(regID);
+				w.myClient.broadcast(packet.toByteArray(), "MoveCursor");
     			w.participantListCursorChange(w.userID, selStart);
 			}
 			catch (CollabrifyException e)
