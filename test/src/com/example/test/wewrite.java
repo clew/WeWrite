@@ -181,7 +181,7 @@ public class wewrite extends Activity
 				
 				is_undo_change = true;
 				//Apply Event;
-				txt.setText(temp2);
+				do_undo_redo_event(redo_event);
 				//APPLY EVENT!!!
 				
 				current_state = txt.getText().toString();
@@ -212,11 +212,12 @@ public class wewrite extends Activity
 				
 				is_undo_change = true;
 				//Apply Event;
-				txt.setText(temp2);
+				do_undo_redo_event(undo_event);
 				//APPLY EVENT!!!
 				
 				current_state = txt.getText().toString();
 				txt.setSelection(undo_event.start + undo_event.text.length());
+				
 				is_undo_change = false;
 				
 				undobutton.setEnabled(true);
@@ -346,5 +347,21 @@ public class wewrite extends Activity
 		MenuItem session_name = menu.findItem(R.id.session_name);
 		session_name.setTitle(sessionName);
 	    return super.onCreateOptionsMenu(menu);
+	}
+
+	public void do_undo_redo_event(MyEvent event) {
+		String s = txt.getText().toString();
+		final int end = Math.min(event.start + event.replacedTextLength, s.length());
+		final int start = Math.min(event.start,  s.length());
+
+		txt.getText().replace(Math.min(start, end), Math.max(start, end), event.text);
+
+		int offset = event.text.length() - event.replacedTextLength;
+		for (int i = 0; i < participantList.size(); i++){
+			int pos =  participantList.get(i).cursor_pos;
+			if (pos > start){
+				participantList.get(i).cursor_pos = Math.max(start, pos + offset);
+			}
+		}
 	}
 }
