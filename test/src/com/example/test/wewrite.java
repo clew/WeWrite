@@ -131,8 +131,7 @@ public class wewrite extends Activity
 					int count, int after) {
 				
 				isTextChange = true;
-				if (!is_undo_change){
-					current_state = txt.getText().toString();
+				if (!is_undo_change && is_user_input){
 					String tmp_string = s.toString().substring(start, start+count);
 					MyEvent undo_event = new MyEvent(1, tmp_string, start, after);
 					undolist.add(undo_event);
@@ -174,8 +173,9 @@ public class wewrite extends Activity
 				MyEvent event = undolist.get(undolist.size()-1);
 				undolist.remove(undolist.size()-1);
 				
-				
-				String redo_text = current_state.substring(event.start, event.start+ event.replacedTextLength);
+				String s = txt.getText().toString();
+				int end = Math.min(event.start + event.replacedTextLength, s.length());
+				String redo_text = s.substring(event.start, end);
 				MyEvent redo_event = new MyEvent(1,redo_text, event.start, event.text.length());
 				redolist.add(redo_event);
 				
@@ -183,9 +183,8 @@ public class wewrite extends Activity
 				//Apply Event;
 				do_undo_redo_event(event);
 				//APPLY EVENT!!!
-				
-				current_state = txt.getText().toString();
-				txt.setSelection(redo_event.start + redo_event.text.length());
+				int index = Math.min(redo_event.start + redo_event.text.length(), txt.getText().toString().length());
+				txt.setSelection(index);
 				is_undo_change = false;
 				
 				redobutton.setEnabled(true);
@@ -205,8 +204,9 @@ public class wewrite extends Activity
 				MyEvent event = redolist.get(redolist.size()-1);
 				redolist.remove(redolist.size()-1);
 				
-				
-				String undo_text = current_state.substring(event.start, event.start + event.replacedTextLength);
+				String s = txt.getText().toString();
+				int end = Math.min(event.start + event.replacedTextLength, s.length());
+				String undo_text = s.substring(event.start, end);
 				MyEvent undo_event = new MyEvent(1,undo_text, event.start, event.text.length());
 				undolist.add(undo_event);
 				
@@ -214,13 +214,11 @@ public class wewrite extends Activity
 				//Apply Event;
 				do_undo_redo_event(event);
 				//APPLY EVENT!!!
-				
-				current_state = txt.getText().toString();
-				txt.setSelection(undo_event.start + undo_event.text.length());
+				int index = Math.min(undo_event.start + undo_event.text.length(), txt.getText().toString().length());
+				txt.setSelection(index);
 				
 				is_undo_change = false;
 				
-				undobutton.setEnabled(true);
 									
 				if(redolist.size() == 0)
 				{
@@ -230,8 +228,8 @@ public class wewrite extends Activity
 		});
 
 		/* Collabrify Setup */
-		tags.add("rawr");
-		tags.add("moo");
+		tags.add("viva");
+		tags.add("vida");
 		
 		CollabrifyListener collabrifyListener = new wewriteCollabrifyAdapter(this);
 		try
